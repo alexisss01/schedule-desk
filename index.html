@@ -14,6 +14,251 @@
           <h1>What To Do Next?</h1>
         </div>
         <div class="topbar-actions">
+          <span class="auth-status" id="authStatus">Checking account...</span>
+          <button class="utility-button hidden" id="logoutButton" type="button" title="Log out">Log out</button>
+          <button class="utility-button" id="exportDataButton" type="button" title="Export records">Export</button>
+          <button class="utility-button" id="importDataButton" type="button" title="Import records">Import</button>
+          <input class="hidden-file-input" id="importDataInput" type="file" accept="application/json,.json" />
+          <div class="today-chip" id="todayChip"></div>
+        </div>
+      </header>
+
+      <section class="auth-panel" id="authPanel" aria-labelledby="authTitle">
+        <form class="auth-card" id="authForm">
+          <div>
+            <p class="eyebrow">Private access</p>
+            <h2 id="authTitle">Sign In To Sync</h2>
+          </div>
+          <label class="field">
+            <span>Email</span>
+            <input id="authEmail" type="email" autocomplete="email" required />
+          </label>
+          <label class="field">
+            <span>Password</span>
+            <input id="authPassword" type="password" autocomplete="current-password" minlength="6" required />
+          </label>
+          <p class="auth-message" id="authMessage">Use your private account to open this schedule.</p>
+          <div class="auth-actions">
+            <button class="ghost-button" id="signUpButton" type="button">Create Account</button>
+            <button class="primary-button" id="signInButton" type="submit">Sign In</button>
+          </div>
+        </form>
+      </section>
+
+      <main class="workspace hidden" id="workspace" aria-label="Schedule workspace">
+        <section class="panel timeline-panel" aria-labelledby="timelineTitle">
+          <div class="panel-header">
+            <div>
+              <p class="eyebrow">Thread</p>
+              <h2 id="timelineTitle">Thread Timeline</h2>
+            </div>
+            <div class="panel-tools">
+              <div class="tag-filter">
+                <button class="tag-filter-button" id="tagFilterButton" type="button" aria-expanded="false">Tag</button>
+                <div class="tag-filter-menu hidden" id="tagFilterMenu"></div>
+              </div>
+              <button class="mini-button filter-button" id="filterMilestoneButton" type="button" title="Filter milestones" aria-label="Filter milestones" aria-pressed="false">
+                <span class="filter-diamond" aria-hidden="true"></span>
+              </button>
+              <button class="mini-button" id="addThreadButton" type="button" title="Add timeline item">+</button>
+            </div>
+          </div>
+          <div class="timeline" id="timelineList"></div>
+        </section>
+
+        <section class="middle-stack" aria-label="Task lists">
+          <section class="panel list-panel" aria-labelledby="todayTitle">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Now</p>
+                <h2 id="todayTitle">Today To Do</h2>
+              </div>
+              <div class="panel-tools">
+                <span class="count-pill" id="todayCount">0</span>
+                <button class="mini-button" id="addTodayButton" type="button" title="Add today's todo">+</button>
+              </div>
+            </div>
+            <div class="task-list" id="todayTodos"></div>
+          </section>
+
+          <section class="panel list-panel" aria-labelledby="nextTitle">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Coming</p>
+                <h2 id="nextTitle">Next To Do</h2>
+              </div>
+              <div class="panel-tools">
+                <span class="count-pill" id="nextCount">0</span>
+                <button class="mini-button" id="addNextButton" type="button" title="Add next todo">+</button>
+              </div>
+            </div>
+            <div class="task-list" id="nextTodos"></div>
+          </section>
+
+          <section class="panel list-panel inbox-panel" aria-labelledby="inboxTitle">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">No date</p>
+                <h2 id="inboxTitle">Inbox</h2>
+              </div>
+              <div class="panel-tools">
+                <span class="count-pill" id="inboxCount">0</span>
+                <button class="mini-button" id="addInboxButton" type="button" title="Add inbox todo">+</button>
+              </div>
+            </div>
+            <div class="task-list" id="inboxTodos"></div>
+          </section>
+        </section>
+
+        <aside class="right-stack" aria-label="Calendar and goals">
+          <section class="panel calendar-panel" aria-labelledby="calendarTitle">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Month</p>
+                <h2 id="calendarTitle">Month Calendar</h2>
+              </div>
+              <span class="month-label" id="monthLabel"></span>
+            </div>
+            <div class="calendar-grid" id="monthCalendar"></div>
+          </section>
+
+          <section class="panel goals-panel" aria-labelledby="goalsTitle">
+            <div class="panel-header">
+            <div>
+              <p class="eyebrow">Year overview</p>
+              <h2 id="goalsTitle">Monthly Goal</h2>
+            </div>
+            <div class="panel-tools">
+              <span class="month-label" id="goalYearLabel"></span>
+              <button class="mini-button" id="addGoalButton" type="button" title="Add current month goal">+</button>
+            </div>
+          </div>
+            <div class="goals-grid" id="monthlyGoals"></div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <dialog class="modal" id="itemDialog">
+      <form class="modal-card" id="itemForm" method="dialog">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow" id="dialogMode">New item</p>
+            <h2 id="dialogTitle">Add Timeline Item</h2>
+          </div>
+          <button class="icon-button" id="closeDialogButton" type="button" aria-label="Close">x</button>
+        </div>
+
+        <input id="itemId" type="hidden" />
+        <label class="field">
+          <span>Type</span>
+          <select id="itemType">
+            <option value="todo">To Do</option>
+            <option value="note">Note</option>
+            <option value="milestone">Milestone</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Date</span>
+          <input id="itemDate" type="date" />
+        </label>
+
+        <label class="field completion-field" id="completionField">
+          <input id="itemCompleted" type="checkbox" />
+          <span>Completed</span>
+        </label>
+
+        <label class="field" id="todoNameField">
+          <span>Name</span>
+          <input id="itemName" type="text" placeholder="Todo name" />
+        </label>
+
+        <label class="field" id="todoNoteField">
+          <span>Note</span>
+          <textarea id="itemNote" rows="4" placeholder="Optional"></textarea>
+        </label>
+
+        <label class="field" id="todoLinkField">
+          <span>Link</span>
+          <input id="itemLink" type="text" inputmode="url" placeholder="https://..." />
+        </label>
+
+        <label class="field">
+          <span>Tag</span>
+          <input id="itemTag" type="text" placeholder="Optional" />
+        </label>
+
+        <label class="field" id="itemContentField">
+          <span>Content</span>
+          <textarea id="itemContent" rows="8" placeholder="Write the details here..."></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button class="danger-button" id="deleteItemButton" type="button">Delete item</button>
+          <div class="action-spacer"></div>
+          <button class="ghost-button" id="cancelItemButton" type="button">Cancel</button>
+          <button class="primary-button" id="saveItemButton" type="submit">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="goalDialog">
+      <form class="modal-card" id="goalForm" method="dialog">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow" id="goalDialogMode">New goal</p>
+            <h2 id="goalDialogTitle">Monthly Goal</h2>
+          </div>
+          <button class="icon-button" id="closeGoalDialogButton" type="button" aria-label="Close">x</button>
+        </div>
+
+        <input id="goalId" type="hidden" />
+        <input id="goalMonth" type="hidden" />
+
+        <label class="field">
+          <span>Month</span>
+          <input id="goalMonthLabel" type="text" disabled />
+        </label>
+
+        <label class="field completion-field" id="goalCompletionField">
+          <input id="goalCompleted" type="checkbox" />
+          <span>Completed</span>
+        </label>
+
+        <label class="field">
+          <span>Goal</span>
+          <textarea id="goalContent" rows="5" placeholder="Write a monthly goal..."></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button class="danger-button" id="deleteGoalButton" type="button">Delete goal</button>
+          <div class="action-spacer"></div>
+          <button class="ghost-button" id="cancelGoalButton" type="button">Cancel</button>
+          <button class="primary-button" id="saveGoalButton" type="submit">Save</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What To Do Next?</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Local schedule tool</p>
+          <h1>What To Do Next?</h1>
+        </div>
+        <div class="topbar-actions">
           <button class="utility-button" id="exportDataButton" type="button" title="Export records">Export</button>
           <button class="utility-button" id="importDataButton" type="button" title="Import records">Import</button>
           <input class="hidden-file-input" id="importDataInput" type="file" accept="application/json,.json" />
